@@ -1,0 +1,36 @@
+#百度贴吧贴子URL有两部分，一部分是贴子的URL，如http://tieba.baidu.com/p/3138733512
+#另一部分是参数部分，如 ?see_lz=1&pn=1。其中see_lz代表只看楼主，值为1时表示该条件为真
+#pn是贴子内各页的页码。
+import requests
+from bs4 import BeautifulSoup
+from urllib.request import urlretrieve
+
+image_url = []
+x= 0
+def get_image_url(url):
+	global image_url
+	response = requests.get(url).text
+	html = BeautifulSoup(response, 'html.parser')
+	image_location = html.find_all('img', {'class':'BDE_Image','pic_ext':'jpeg'})
+	
+	for image in image_location:
+		if 'src' in image.attrs:
+			if image.attrs['src'] not in image_url:
+				#我们遇到新图片地址
+				new_url = image.attrs['src']
+				image_url.append(new_url)
+	return image_url
+		
+def download(image_url):
+	global x
+	for url in image_url:
+		urlretrieve(url, '%s.jpg' % x)
+		x = x + 1 
+		
+def yema(num1, num2):
+	for num in range(num1, num2 + 1):
+		url = "http://tieba.baidu.com/p/3138733512?see_lz=1&pn=" + "%s" % num
+		list = get_image_url(url)
+	download(list)
+		
+yema(1,2)
