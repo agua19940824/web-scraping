@@ -1,2 +1,2 @@
 # web-scraping
-Some exercise about web scraping with Python
+Some exercises about web scraping with Python
